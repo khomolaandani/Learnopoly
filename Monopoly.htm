@@ -1,0 +1,560 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+	<title>Monopoly</title>
+	<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+	
+	<script type="text/javascript" src="Monopoly_files/Classic%2520Edition.js"></script>
+	<!-- Comment out the previous line and uncomment the next one to enable the New York City Edition -->
+	<!-- <script type="text/javascript" src="New%20York%20City%20Edition.js"></script> -->
+	<script type="text/javascript" src="Monopoly_files/AI.js"></script>
+	<script type="text/javascript" src="Monopoly_files/Monopoly.js"></script>
+	<link rel="stylesheet" type="text/css" href="Monopoly_files/Monopoly.css">
+</head>
+
+<body>
+	<div style="display: none;" id="popupbackground"></div>
+	<div style="display: none;" id="popupwrap">
+		<div style="width: 300px; top: 0px; left: 0px;" id="popup">
+			<div style="position: relative;">
+				<img style="display: none;" id="popupclose" src="Monopoly_files/close.png" title="Close" alt="x" onclick="hide('popupbackground'); hide('popupwrap');">
+				<div id="popuptext"><div style="font-weight: bold; font-size: 16px; margin-bottom: 10px;">Auction <span id="propertyname"><a href="javascript:void(0);" onmouseover="showdeed(12);" onmouseout="hidedeed();" class="statscellcolor">Electric Company</a></span></div><div>Highest Bid = $<span id="highestbid">100</span> (<span id="highestbidder">Player 1</span>)</div><div><span id="currentbidder">Player 2</span>, it is your turn to bid.<input id="bid" title="Enter an amount to bid on Electric Company." style="width: 291px; color: black;"></div><div><input value="Bid" onclick="game.auctionBid();" title="Place your bid." type="button"><input value="Pass" title="Skip bidding this time." onclick="game.auctionPass();" type="button"><input value="Exit Auction" title="Stop bidding on Electric Company altogether." onclick='if (confirm("Are you sure you want to stop bidding on this property altogether?")) game.auctionExit();' type="button"></div></div>
+				<div id="popupdrag"></div>
+			</div>
+		</div>
+	</div>
+
+	<div style="display: none;" id="statsbackground" onclick="hide('statsbackground'); hide('statswrap');"></div>
+	<div style="display: none;" id="statswrap">
+		<div style="width: 454px; top: 0px; left: 0px;" id="stats">
+			<div style="position: relative;">
+				<img id="statsclose" src="Monopoly_files/close.png" title="Close" alt="x" onclick="hide('statsbackground'); hide('statswrap');">
+				<div id="statstext"><table align="center"><tbody><tr><td class="statscell" id="statscell1" style="border: 2px solid yellow"><div class="statsplayername">Player 1</div><table><tbody><tr><td class="statscellcolor" style="background: #FFFFFF; border: 1px solid grey;" onmouseover="showdeed(12);" onmouseout="hidedeed();"></td><td class="statscellname">Electric Company</td></tr><tr><td class="statscellcolor" style="background: #FFA500;" onmouseover="showdeed(16);" onmouseout="hidedeed();"></td><td class="statscellname">St. James Place</td></tr></tbody></table></td><td class="statscell" id="statscell2" style="border: 2px solid blue"><div class="statsplayername">Player 2</div>Player 2 dosen't have any properties.</td></tr></tbody></table><div id="titledeed"></div></div>
+				<div id="statsdrag"></div>
+			</div>
+		</div>
+	</div>
+
+	<p style="display: none;" id="noscript">
+		Note: This page will not function without JavaScript.
+	</p>
+
+	<div id="refresh">
+		Refresh this page to start a new game.
+	</div>
+
+	<div id="enlarge">
+	</div>
+	
+	<div style="display: none; top: 338px; left: 447px;" id="deed">
+		<div id="deed-normal" style="display: block;">
+			<div style="background-color: rgb(255, 165, 0);" id="deed-header">
+				<div style="margin: 5px; font-size: 11px;">T I T L E&nbsp;&nbsp;D E E D</div>
+				<div id="deed-name">St. James Place</div>
+			</div>
+			<table id="deed-table">
+				<tbody><tr>
+					<td colspan="2">
+						RENT&nbsp;$<span id="deed-baserent">14</span>.
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: left;">With 1 House</td>
+					<td style="text-align: right;">$&nbsp;&nbsp;&nbsp;<span id="deed-rent1">70</span>.</td>
+				</tr>
+				<tr>
+					<td style="text-align: left;">With 2 Houses</td>
+					<td style="text-align: right;"><span id="deed-rent2">200</span>.</td>
+				</tr>
+				<tr>
+					<td style="text-align: left;">With 3 Houses</td>
+					<td style="text-align: right;"><span id="deed-rent3">550</span>.</td>
+				</tr>
+				<tr>
+					<td style="text-align: left;">With 4 Houses</td>
+					<td style="text-align: right;"><span id="deed-rent4">750</span>.</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div style="margin-bottom: 8px;">With HOTEL $<span id="deed-rent5">950</span>.</div>
+						<div>Mortgage Value $<span id="deed-mortgage">90</span>.</div>
+						<div>Houses cost $<span id="deed-houseprice">100</span>. each</div>
+						<div>Hotels, $<span id="deed-hotelprice">100</span>. plus 4 houses</div>
+						<div style="font-size: 9px; font-style: italic; margin-top: 5px;">If a player owns ALL the Lots of any Color-Group, the rent is Doubled on Unimproved Lots in that group.</div>
+					</td>
+				</tr>
+			</tbody></table>
+		</div>
+		
+		<div style="display: none;" id="deed-mortgaged">
+			<div id="deed-mortgaged-name"></div>
+			<p>•</p>
+			<div>MORTGAGED</div>
+			<div> for $<span id="deed-mortgaged-mortgage">80</span></div>
+			<p>•</p>
+			<div style="font-style: italic; font-size: 13px; margin: 10px;">Card must be turned this side up if property is mortgaged</div>
+		</div>
+		
+		<div style="display: none;" id="deed-special">
+			<div id="deed-special-name"></div>
+			<div id="deed-special-text"></div>
+			<div id="deed-special-footer">
+				Mortgage Value
+				<span style="float: right;">$<span id="deed-special-mortgage">100</span>.</span>
+			</div>
+		</div>
+	</div><table style="display: block;" id="board">
+		<tbody><tr>
+			<td style="border: 1px solid black;" class="cell board-corner" id="cell20"><div class="cell-anchor" id="cell20anchor"><div class="cell-position-holder" id="cell20positionholder"></div><div class="cell-name" id="cell20name">Free Parking</div></div></td>
+			<td style="border: 1px solid black;" class="cell board-top" id="cell21"><div class="cell-anchor" id="cell21anchor"><div class="cell-position-holder" id="cell21positionholder"></div><div class="cell-name" id="cell21name">Kentucky Avenue</div><div style="display: none;" class="cell-owner" id="cell21owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-top" id="cell22"><div class="cell-anchor" id="cell22anchor"><div class="cell-position-holder" id="cell22positionholder"></div><div class="cell-name" id="cell22name">Chance</div></div></td>
+			<td style="border: 1px solid black;" class="cell board-top" id="cell23"><div class="cell-anchor" id="cell23anchor"><div class="cell-position-holder" id="cell23positionholder"></div><div class="cell-name" id="cell23name">Indiana Avenue</div><div style="display: none;" class="cell-owner" id="cell23owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-top" id="cell24"><div class="cell-anchor" id="cell24anchor"><div class="cell-position-holder" id="cell24positionholder"></div><div class="cell-name" id="cell24name">Illinois Avenue</div><div style="display: none;" class="cell-owner" id="cell24owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-top" id="cell25"><div class="cell-anchor" id="cell25anchor"><div class="cell-position-holder" id="cell25positionholder"></div><div class="cell-name" id="cell25name">B&amp;O Railroad</div><div style="display: none;" class="cell-owner" id="cell25owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-top" id="cell26"><div class="cell-anchor" id="cell26anchor"><div class="cell-position-holder" id="cell26positionholder"></div><div class="cell-name" id="cell26name">Atlantic Avenue</div><div style="display: none;" class="cell-owner" id="cell26owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-top" id="cell27"><div class="cell-anchor" id="cell27anchor"><div class="cell-position-holder" id="cell27positionholder"></div><div class="cell-name" id="cell27name">Ventnor Avenue</div><div style="display: none;" class="cell-owner" id="cell27owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-top" id="cell28"><div class="cell-anchor" id="cell28anchor"><div class="cell-position-holder" id="cell28positionholder"></div><div class="cell-name" id="cell28name">Water Works</div><div style="display: none;" class="cell-owner" id="cell28owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-top" id="cell29"><div class="cell-anchor" id="cell29anchor"><div class="cell-position-holder" id="cell29positionholder"></div><div class="cell-name" id="cell29name">Marvin Gardens</div><div style="display: none;" class="cell-owner" id="cell29owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-corner" id="cell30"><div class="cell-anchor" id="cell30anchor"><div class="cell-position-holder" id="cell30positionholder"></div><div class="cell-name" id="cell30name">Go to Jail</div></div></td>
+		</tr><tr>
+			<td style="border: 1px solid black;" class="cell board-left" id="cell19"><div class="cell-anchor" id="cell19anchor"><div class="cell-position-holder" id="cell19positionholder"></div><div class="cell-name" id="cell19name">New York Avenue</div><div style="display: none;" class="cell-owner" id="cell19owner"></div></div></td>
+			<td colspan="9" class="board-center"></td>
+			<td style="border: 1px solid black;" class="cell board-right" id="cell31"><div class="cell-anchor" id="cell31anchor"><div class="cell-position-holder" id="cell31positionholder"></div><div class="cell-name" id="cell31name">Pacific Avenue</div><div style="display: none;" class="cell-owner" id="cell31owner"></div></div></td>
+		</tr><tr>
+			<td style="border: 1px solid black;" class="cell board-left" id="cell18"><div class="cell-anchor" id="cell18anchor"><div class="cell-position-holder" id="cell18positionholder"></div><div class="cell-name" id="cell18name">Tennessee Avenue</div><div style="display: none;" class="cell-owner" id="cell18owner"></div></div></td>
+			<td colspan="9" class="board-center"></td>
+			<td style="border: 1px solid black;" class="cell board-right" id="cell32"><div class="cell-anchor" id="cell32anchor"><div class="cell-position-holder" id="cell32positionholder"></div><div class="cell-name" id="cell32name">North Carolina Avenue</div><div style="display: none;" class="cell-owner" id="cell32owner"></div></div></td>
+		</tr><tr>
+			<td style="border: 1px solid black;" class="cell board-left" id="cell17"><div class="cell-anchor" id="cell17anchor"><div class="cell-position-holder" id="cell17positionholder"></div><div class="cell-name" id="cell17name">Community Chest</div></div></td>
+			<td colspan="9" class="board-center"></td>
+			<td style="border: 1px solid black;" class="cell board-right" id="cell33"><div class="cell-anchor" id="cell33anchor"><div class="cell-position-holder" id="cell33positionholder"></div><div class="cell-name" id="cell33name">Community Chest</div></div></td>
+		</tr><tr>
+			<td style="border: 1px solid yellow;" class="cell board-left" id="cell16"><div class="cell-anchor" id="cell16anchor"><div class="cell-position-holder" id="cell16positionholder"><div class="cell-position" title="Player 1" style="background-color: yellow; left: 0px; top: 0px;"></div></div><div class="cell-name" id="cell16name">St. James Place</div><div title="Player 1" style="display: block; background-color: yellow;" class="cell-owner" id="cell16owner"></div></div></td>
+			<td colspan="9" class="board-center"></td>
+			<td style="border: 1px solid black;" class="cell board-right" id="cell34"><div class="cell-anchor" id="cell34anchor"><div class="cell-position-holder" id="cell34positionholder"></div><div class="cell-name" id="cell34name">Pennsylvania Avenue</div><div style="display: none;" class="cell-owner" id="cell34owner"></div></div></td>
+		</tr><tr>
+			<td style="border: 1px solid black;" class="cell board-left" id="cell15"><div class="cell-anchor" id="cell15anchor"><div class="cell-position-holder" id="cell15positionholder"></div><div class="cell-name" id="cell15name">Pennsylvania Railroad</div><div style="display: none;" class="cell-owner" id="cell15owner"></div></div></td>
+			<td colspan="9" class="board-center"></td>
+			<td style="border: 1px solid black;" class="cell board-right" id="cell35"><div class="cell-anchor" id="cell35anchor"><div class="cell-position-holder" id="cell35positionholder"></div><div class="cell-name" id="cell35name">Short Line</div><div style="display: none;" class="cell-owner" id="cell35owner"></div></div></td>
+		</tr><tr>
+			<td style="border: 1px solid black;" class="cell board-left" id="cell14"><div class="cell-anchor" id="cell14anchor"><div class="cell-position-holder" id="cell14positionholder"></div><div class="cell-name" id="cell14name">Virginia Avenue</div><div style="display: none;" class="cell-owner" id="cell14owner"></div></div></td>
+			<td colspan="9" class="board-center"></td>
+			<td style="border: 1px solid black;" class="cell board-right" id="cell36"><div class="cell-anchor" id="cell36anchor"><div class="cell-position-holder" id="cell36positionholder"></div><div class="cell-name" id="cell36name">Chance</div></div></td>
+		</tr><tr>
+			<td style="border: 1px solid black;" class="cell board-left" id="cell13"><div class="cell-anchor" id="cell13anchor"><div class="cell-position-holder" id="cell13positionholder"></div><div class="cell-name" id="cell13name">States Avenue</div><div style="display: none;" class="cell-owner" id="cell13owner"></div></div></td>
+			<td colspan="9" class="board-center"></td>
+			<td style="border: 1px solid black;" class="cell board-right" id="cell37"><div class="cell-anchor" id="cell37anchor"><div class="cell-position-holder" id="cell37positionholder"></div><div class="cell-name" id="cell37name">Park Place</div><div style="display: none;" class="cell-owner" id="cell37owner"></div></div></td>
+		</tr><tr>
+			<td style="border: 1px solid black;" class="cell board-left" id="cell12"><div class="cell-anchor" id="cell12anchor"><div class="cell-position-holder" id="cell12positionholder"><div class="cell-position" title="Player 2" style="background-color: blue; left: 0px; top: 0px;"></div></div><div class="cell-name" id="cell12name">Electric Company</div><div title="Player 1" style="display: block; background-color: yellow;" class="cell-owner" id="cell12owner"></div></div></td>
+			<td colspan="9" class="board-center"></td>
+			<td style="border: 1px solid black;" class="cell board-right" id="cell38"><div class="cell-anchor" id="cell38anchor"><div class="cell-position-holder" id="cell38positionholder"></div><div class="cell-name" id="cell38name">LUXURY TAX</div></div></td>
+		</tr><tr>
+			<td style="border: 1px solid black;" class="cell board-left" id="cell11"><div class="cell-anchor" id="cell11anchor"><div class="cell-position-holder" id="cell11positionholder"></div><div class="cell-name" id="cell11name">St. Charles Place</div><div style="display: none;" class="cell-owner" id="cell11owner"></div></div></td>
+			<td colspan="9" class="board-center">
+				<div style="border: 1px solid black;" id="jail" onmouseover="show('enlarge-wrap'); show('enlarge40');" onmouseout="hide('enlarge-wrap'); hide('enlarge40');">Jail<div id="jailpositionholder"></div></div>
+			</td>
+			<td style="border: 1px solid black;" class="cell board-right" id="cell39"><div class="cell-anchor" id="cell39anchor"><div class="cell-position-holder" id="cell39positionholder"></div><div class="cell-name" id="cell39name">Boardwalk</div><div style="display: none;" class="cell-owner" id="cell39owner"></div></div></td>
+		</tr><tr>
+			<td style="border: 1px solid black;" class="cell board-corner" id="cell10"><div class="cell-anchor" id="cell10anchor"><div class="cell-position-holder" id="cell10positionholder"></div><div class="cell-name" id="cell10name">Just Visiting</div></div></td>
+			<td style="border: 1px solid black;" class="cell board-bottom" id="cell9"><div class="cell-anchor" id="cell9anchor"><div class="cell-position-holder" id="cell9positionholder"></div><div class="cell-name" id="cell9name">Connecticut Avenue</div><div style="display: none;" class="cell-owner" id="cell9owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-bottom" id="cell8"><div class="cell-anchor" id="cell8anchor"><div class="cell-position-holder" id="cell8positionholder"></div><div class="cell-name" id="cell8name">Vermont Avenue</div><div style="display: none;" class="cell-owner" id="cell8owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-bottom" id="cell7"><div class="cell-anchor" id="cell7anchor"><div class="cell-position-holder" id="cell7positionholder"></div><div class="cell-name" id="cell7name">Chance</div></div></td>
+			<td style="border: 1px solid black;" class="cell board-bottom" id="cell6"><div class="cell-anchor" id="cell6anchor"><div class="cell-position-holder" id="cell6positionholder"></div><div class="cell-name" id="cell6name">Oriental Avenue</div><div style="display: none;" class="cell-owner" id="cell6owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-bottom" id="cell5"><div class="cell-anchor" id="cell5anchor"><div class="cell-position-holder" id="cell5positionholder"></div><div class="cell-name" id="cell5name">Reading Railroad</div><div style="display: none;" class="cell-owner" id="cell5owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-bottom" id="cell4"><div class="cell-anchor" id="cell4anchor"><div class="cell-position-holder" id="cell4positionholder"></div><div class="cell-name" id="cell4name">City Tax</div></div></td>
+			<td style="border: 1px solid black;" class="cell board-bottom" id="cell3"><div class="cell-anchor" id="cell3anchor"><div class="cell-position-holder" id="cell3positionholder"></div><div class="cell-name" id="cell3name">Baltic Avenue</div><div style="display: none;" class="cell-owner" id="cell3owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-bottom" id="cell2"><div class="cell-anchor" id="cell2anchor"><div class="cell-position-holder" id="cell2positionholder"></div><div class="cell-name" id="cell2name">Community Chest</div></div></td>
+			<td style="border: 1px solid black;" class="cell board-bottom" id="cell1"><div class="cell-anchor" id="cell1anchor"><div class="cell-position-holder" id="cell1positionholder"></div><div class="cell-name" id="cell1name">Mediter-ranean Avenue</div><div style="display: none;" class="cell-owner" id="cell1owner"></div></div></td>
+			<td style="border: 1px solid black;" class="cell board-corner" id="cell0"><div class="cell-anchor" id="cell0anchor"><div class="cell-position-holder" id="cell0positionholder"></div><div class="cell-name" id="cell0name">GO</div></div></td>
+		</tr>
+	</tbody></table>
+
+	<div id="moneybarwrap">
+		<div style="display: block;" id="moneybar">
+			<table>
+				<tbody><tr style="display: block;" id="moneybarrow1">
+					<td class="moneybararrowcell"><img style="display: block;" src="Monopoly_files/arrow.png" id="p1arrow" alt="&gt;" height="30" width="30"></td>
+					<td style="border: 2px solid yellow;" id="p1moneybar" class="moneybarcell">
+						<div><span id="p1moneyname">Player 1</span>:</div>
+						<div>$<span id="p1money">1200</span></div>
+					</td>
+				</tr>
+				<tr style="display: block;" id="moneybarrow2">
+					<td class="moneybararrowcell"><img style="display: none;" src="Monopoly_files/arrow.png" id="p2arrow" alt="&gt;" height="30" width="30"></td>
+					<td style="border: 2px solid blue;" id="p2moneybar" class="moneybarcell">
+						<div><span id="p2moneyname">Player 2</span>:</div>
+						<div>$<span id="p2money">1485</span></div>
+					</td>
+				</tr>
+				<tr style="display: none;" id="moneybarrow3">
+					<td class="moneybararrowcell"><img src="Monopoly_files/arrow.png" id="p3arrow" alt="&gt;" height="30" width="30"></td>
+					<td id="p3moneybar" class="moneybarcell">
+						<div><span id="p3moneyname">Player 3</span>:</div>
+						<div>$<span id="p3money">1500</span></div>
+					</td>
+				</tr>
+				<tr style="display: none;" id="moneybarrow4">
+					<td class="moneybararrowcell"><img src="Monopoly_files/arrow.png" id="p4arrow" alt="&gt;" height="30" width="30"></td>
+					<td id="p4moneybar" class="moneybarcell">
+						<div><span id="p4moneyname">Player 4</span>:</div>
+						<div>$<span id="p4money">1500</span></div>
+					</td>
+				</tr>
+				<tr style="display: none;" id="moneybarrow5">
+					<td class="moneybararrowcell"><img src="Monopoly_files/arrow.png" id="p5arrow" alt="&gt;" height="30" width="30"></td>
+					<td id="p5moneybar" class="moneybarcell">
+						<div><span id="p5moneyname">Player 5</span>:</div>
+						<div>$<span id="p5money">1500</span></div>
+					</td>
+				</tr>
+				<tr style="display: none;" id="moneybarrow6">
+					<td class="moneybararrowcell"><img src="Monopoly_files/arrow.png" id="p6arrow" alt="&gt;" height="30" width="30"></td>
+					<td id="p6moneybar" class="moneybarcell">
+						<div><span id="p6moneyname">Player 6</span>:</div>
+						<div>$<span id="p6money">1500</span></div>
+					</td>
+				</tr>
+				<tr style="display: none;" id="moneybarrow7">
+					<td class="moneybararrowcell"><img src="Monopoly_files/arrow.png" id="p7arrow" alt="&gt;" height="30" width="30"></td>
+					<td id="p7moneybar" class="moneybarcell">
+						<div><span id="p7moneyname">Player 7</span>:</div>
+						<div>$<span id="p7money">1500</span></div>
+					</td>
+				</tr>
+				<tr style="display: none;" id="moneybarrow8">
+					<td class="moneybararrowcell"><img src="Monopoly_files/arrow.png" id="p8arrow" alt="&gt;" height="30" width="30"></td>
+					<td id="p8moneybar" class="moneybarcell">
+						<div><span id="p8moneyname">Player 8</span>:</div>
+						<div>$<span id="p8money">1500</span></div>
+					</td>
+				</tr>
+				<tr style="display: block;" id="moneybarrow9">
+					<td style="border: none;" class="moneybararrowcell">&nbsp;</td>
+					<td style="border: none;">
+						<input style="display: inline;" id="viewstats" value="View stats" onclick="showstats();" title="View a pop-up window that shows a list of each player's properties." type="button">
+					</td>
+				</tr>
+			</tbody></table>
+		</div>
+	</div>
+
+	<div style="display: none;" id="setup">
+		<div style="margin-bottom: 20px;">
+			Select number of players.
+			<select id="playernumber" title="Select the number of players for the game.">
+				<option selected="selected">2</option>
+				<option>3</option>
+				<option>4</option>
+				<option>5</option>
+				<option>6</option>
+				<option>7</option>
+				<option>8</option>
+			</select>
+		</div>
+
+		<div style="display: block;" id="player1input">
+			Player 1: <input id="player1name" title="Player name" maxlength="16" value="Player 1" type="text">
+			<select id="player1color" title="Player color">
+				<option style="color: aqua;">Aqua</option>
+				<option style="color: black;">Black</option>
+				<option style="color: blue;">Blue</option>
+				<option style="color: fuchsia;">Fuchsia</option>
+				<option style="color: gray;">Gray</option>
+				<option style="color: green;">Green</option>
+				<option style="color: lime;">Lime</option>
+				<option style="color: maroon;">Maroon</option>
+				<option style="color: navy;">Navy</option>
+				<option style="color: olive;">Olive</option>
+				<option style="color: orange;">Orange</option>
+				<option style="color: purple;">Purple</option>
+				<option style="color: red;">Red</option>
+				<option style="color: silver;">Silver</option>
+				<option style="color: teal;">Teal</option>
+				<option selected="selected" style="color: yellow;">Yellow</option>
+			</select>
+			<select id="player1ai" title="Choose whether this player is controled by a human or by the computer." onclick="document.getElementById('player1name').disabled = this.value !== '0';">
+				<option value="0" selected="selected">Human</option>
+				<option value="1">AI (Test)</option>
+			</select>
+		</div>
+
+		<div style="display: block;" id="player2input">
+			Player 2: <input id="player2name" title="Player name" maxlength="16" value="Player 2" type="text">
+			<select id="player2color" title="Player color">
+				<option style="color: aqua;">Aqua</option>
+				<option style="color: black;">Black</option>
+				<option selected="selected" style="color: blue;">Blue</option>
+				<option style="color: fuchsia;">Fuchsia</option>
+				<option style="color: gray;">Gray</option>
+				<option style="color: green;">Green</option>
+				<option style="color: lime;">Lime</option>
+				<option style="color: maroon;">Maroon</option>
+				<option style="color: navy;">Navy</option>
+				<option style="color: olive;">Olive</option>
+				<option style="color: orange;">Orange</option>
+				<option style="color: purple;">Purple</option>
+				<option style="color: red;">Red</option>
+				<option style="color: silver;">Silver</option>
+				<option style="color: teal;">Teal</option>
+				<option style="color: yellow;">Yellow</option>
+			</select>
+			<select id="player2ai" title="Choose whether this player is controled by a human or by the computer." onclick="document.getElementById('player2name').disabled = this.value !== '0';">
+				<option value="0" selected="selected">Human</option>
+				<option value="1">AI (Test)</option>
+			</select>
+		</div>
+
+		<div style="display: none;" id="player3input">
+			Player 3: <input id="player3name" title="Player name" maxlength="16" value="Player 3" type="text">
+			<select id="player3color" title="Player color">
+				<option style="color: aqua;">Aqua</option>
+				<option style="color: black;">Black</option>
+				<option style="color: blue;">Blue</option>
+				<option style="color: fuchsia;">Fuchsia</option>
+				<option style="color: gray;">Gray</option>
+				<option style="color: green;">Green</option>
+				<option style="color: lime;">Lime</option>
+				<option style="color: maroon;">Maroon</option>
+				<option style="color: navy;">Navy</option>
+				<option style="color: olive;">Olive</option>
+				<option style="color: orange;">Orange</option>
+				<option style="color: purple;">Purple</option>
+				<option selected="selected" style="color: red;">Red</option>
+				<option style="color: silver;">Silver</option>
+				<option style="color: teal;">Teal</option>
+				<option style="color: yellow;">Yellow</option>
+			</select>
+			<select id="player3ai" title="Choose whether this player is controled by a human or by the computer." onclick="document.getElementById('player3name').disabled = this.value !== '0';">
+				<option value="0" selected="selected">Human</option>
+				<option value="1">AI (Test)</option>
+			</select>
+		</div>
+
+		<div style="display: none;" id="player4input">
+			Player 4: <input id="player4name" title="Player name" maxlength="16" value="Player 4" type="text">
+			<select id="player4color" title="Player color">
+				<option style="color: aqua;">Aqua</option>
+				<option style="color: black;">Black</option>
+				<option style="color: blue;">Blue</option>
+				<option style="color: fuchsia;">Fuchsia</option>
+				<option style="color: gray;">Gray</option>
+				<option style="color: green;">Green</option>
+				<option selected="selected" style="color: lime;">Lime</option>
+				<option style="color: maroon;">Maroon</option>
+				<option style="color: navy;">Navy</option>
+				<option style="color: olive;">Olive</option>
+				<option style="color: orange;">Orange</option>
+				<option style="color: purple;">Purple</option>
+				<option style="color: red;">Red</option>
+				<option style="color: silver;">Silver</option>
+				<option style="color: teal;">Teal</option>
+				<option style="color: yellow;">Yellow</option>
+			</select>
+			<select id="player4ai" title="Choose whether this player is controled by a human or by the computer." onclick="document.getElementById('player4name').disabled = this.value !== '0';">
+				<option value="0" selected="selected">Human</option>
+				<option value="1">AI (Test)</option>
+			</select>
+		</div>
+
+		<div style="display: none;" id="player5input">
+			Player 5: <input id="player5name" title="Player name" maxlength="16" value="Player 5" type="text">
+			<select id="player5color" title="Player color">
+				<option style="color: aqua;">Aqua</option>
+				<option style="color: black;">Black</option>
+				<option style="color: blue;">Blue</option>
+				<option style="color: fuchsia;">Fuchsia</option>
+				<option style="color: gray;">Gray</option>
+				<option selected="selected" style="color: green;">Green</option>
+				<option style="color: lime;">Lime</option>
+				<option style="color: maroon;">Maroon</option>
+				<option style="color: navy;">Navy</option>
+				<option style="color: olive;">Olive</option>
+				<option style="color: orange;">Orange</option>
+				<option style="color: purple;">Purple</option>
+				<option style="color: red;">Red</option>
+				<option style="color: silver;">Silver</option>
+				<option style="color: teal;">Teal</option>
+				<option style="color: yellow;">Yellow</option>
+			</select>
+			<select id="player5ai" title="Choose whether this player is controled by a human or by the computer." onclick="document.getElementById('player5name').disabled = this.value !== '0';">
+				<option value="0" selected="selected">Human</option>
+				<option value="1">AI (Test)</option>
+			</select>
+		</div>
+
+		<div style="display: none;" id="player6input">
+			Player 6: <input id="player6name" title="Player name" maxlength="16" value="Player 6" type="text">
+			<select id="player6color" title="Player color">
+				<option selected="selected" style="color: aqua;">Aqua</option>
+				<option style="color: black;">Black</option>
+				<option style="color: blue;">Blue</option>
+				<option style="color: fuchsia;">Fuchsia</option>
+				<option style="color: gray;">Gray</option>
+				<option style="color: green;">Green</option>
+				<option style="color: lime;">Lime</option>
+				<option style="color: maroon;">Maroon</option>
+				<option style="color: navy;">Navy</option>
+				<option style="color: olive;">Olive</option>
+				<option style="color: orange;">Orange</option>
+				<option style="color: purple;">Purple</option>
+				<option style="color: red;">Red</option>
+				<option style="color: silver;">Silver</option>
+				<option style="color: teal;">Teal</option>
+				<option style="color: yellow;">Yellow</option>
+			</select>
+			<select id="player6ai" title="Choose whether this player is controled by a human or by the computer." onclick="document.getElementById('player6name').disabled = this.value !== '0';">
+				<option value="0" selected="selected">Human</option>
+				<option value="1">AI (Test)</option>
+			</select>
+		</div>
+
+		<div style="display: none;" id="player7input">
+			Player 7: <input id="player7name" title="Player name" maxlength="16" value="Player 7" type="text">
+			<select id="player7color" title="Player color">
+				<option style="color: aqua;">Aqua</option>
+				<option style="color: black;">Black</option>
+				<option style="color: blue;">Blue</option>
+				<option style="color: fuchsia;">Fuchsia</option>
+				<option style="color: gray;">Gray</option>
+				<option style="color: green;">Green</option>
+				<option style="color: lime;">Lime</option>
+				<option style="color: maroon;">Maroon</option>
+				<option style="color: navy;">Navy</option>
+				<option style="color: olive;">Olive</option>
+				<option selected="selected" style="color: orange;">Orange</option>
+				<option style="color: purple;">Purple</option>
+				<option style="color: red;">Red</option>
+				<option style="color: silver;">Silver</option>
+				<option style="color: teal;">Teal</option>
+				<option style="color: yellow;">Yellow</option>
+			</select>
+			<select id="player7ai" title="Choose whether this player is controled by a human or by the computer." onclick="document.getElementById('player7name').disabled = this.value !== '0';">
+				<option value="0" selected="selected">Human</option>
+				<option value="1">AI (Test)</option>
+			</select>
+		</div>
+
+		<div style="display: none;" id="player8input">
+			Player 8: <input id="player8name" title="Player name" maxlength="16" value="Player 8" type="text">
+			<select id="player8color" title="Player color">
+				<option style="color: aqua;">Aqua</option>
+				<option style="color: black;">Black</option>
+				<option style="color: blue;">Blue</option>
+				<option style="color: fuchsia;">Fuchsia</option>
+				<option style="color: gray;">Gray</option>
+				<option style="color: green;">Green</option>
+				<option style="color: lime;">Lime</option>
+				<option style="color: maroon;">Maroon</option>
+				<option style="color: navy;">Navy</option>
+				<option style="color: olive;">Olive</option>
+				<option style="color: orange;">Orange</option>
+				<option selected="selected" style="color: purple;">Purple</option>
+				<option style="color: red;">Red</option>
+				<option style="color: silver;">Silver</option>
+				<option style="color: teal;">Teal</option>
+				<option style="color: yellow;">Yellow</option>
+			</select>
+			<select id="player8ai" title="Choose whether this player is controled by a human or by the computer." onclick="document.getElementById('player8name').disabled = this.value !== '0';">
+				<option value="0" selected="selected">Human</option>
+				<option value="1">AI (Test)</option>
+			</select>
+		</div>
+
+		<div style="margin: 20px 0px;">
+			<input value="Start Game" onclick="setup();" title="Begin playing." type="button">
+		</div>
+
+		<div style="display: block;" id="noF5">Note: Refreshing this page or navigating away from it may end your game without warning.</div>
+	</div>
+
+	<div style="display: block;" id="control">
+		<table>
+			<tbody><tr>
+				<td style="text-align: left; vertical-align: top; border: none;">
+					<div id="menu">
+						<table id="menutable" cellspacing="0">
+							<tbody><tr>
+								<td class="menuitem" id="menuitem1" onmouseover="menuitem_onmouseover(this);" onmouseout="menuitem_onmouseout(this);">
+									<a href="javascript:void(0);" title="View alerts and buy the property you landed on." onclick="show('buy'); hide('manage');">Buy</a>
+								</td>
+								<td class="menuitem" id="menuitem2" onmouseover="menuitem_onmouseover(this);" onmouseout="menuitem_onmouseout(this);">
+									<a href="javascript:void(0);" title="View, mortgage, and improve your property. " onclick="hide('buy'); show('manage');">Manage</a>
+								</td>
+								<td class="menuitem" id="menuitem3" onmouseover="menuitem_onmouseover(this);" onmouseout="menuitem_onmouseout(this);">
+									<a href="javascript:void(0);" title="Exchange property with other players." onclick="game.trade();">Trade</a>
+								</td>
+							</tr>
+						</tbody></table>
+					</div>
+
+					<div style="display: block;" id="buy">
+						<div id="alert"><div>It is Player 1's turn.</div><div>Player 1 bought Electric Company for $100.</div><div>Player 2 landed on Electric Company.</div><div>Player 2 rolled 5.</div><div>It is Player 2's turn.</div><div>Player 1 bought St. James Place for $200.</div><div>Player 1 landed on St. James Place.</div><div>Player 1 rolled 9.</div><div>It is Player 1's turn.</div><div>Player 2 lost $15 from Chance.</div><div>Player 2 landed on Chance.</div><div>Player 2 rolled 7.</div><div>It is Player 2's turn.</div><div>Player 1 landed on Chance.</div><div>Player 1 rolled 7.</div><div>It is Player 1's turn.</div></div>
+						<div style="display: none;" id="landed"><div>You landed on <a href="javascript:void(0);" onmouseover="showdeed(12);" onmouseout="hidedeed();" class="statscellcolor">Electric Company</a>.<input onclick="buy();" value="Buy ($150)" title="Buy Electric Company for $150." type="button"></div></div>
+					</div>
+
+					<div style="display: none;" id="manage">
+						<div style="display: block;" id="option">
+							<div style="display: none;" id="buildings" title="Available buildings"><img src="Monopoly_files/house.png" alt="" title="House" class="house">:&nbsp;32&nbsp;&nbsp;<img src="Monopoly_files/hotel.png" alt="" title="Hotel" class="hotel">:&nbsp;12</div>
+							<input style="display: none;" value="Buy house" id="buyhousebutton" type="button">
+							<input title="Mortgage Electric Company for $75." style="display: inline;" value="Mortgage ($75)" id="mortgagebutton" type="button">
+							<input style="display: none;" value="Sell house" id="sellhousebutton" type="button">
+						</div>
+						<div style="display: block;" id="owned"><table><tbody><tr onclick="propertycell_onclick(this, 12);"><td class="propertycellcheckbox"><input checked="checked" id="propertycheckbox12" type="checkbox"></td><td class="propertycellcolor" style="background: #FFFFFF; border: 1px solid grey; width: 18px;" onmouseover="showdeed(12);" onmouseout="hidedeed();"></td><td class="propertycellname">Electric Company</td></tr><tr onclick="propertycell_onclick(this, 16);"><td class="propertycellcheckbox"><input id="propertycheckbox16" type="checkbox"></td><td class="propertycellcolor" style="background: #FFA500;" onmouseover="showdeed(16);" onmouseout="hidedeed();"></td><td class="propertycellname">St. James Place</td></tr></tbody></table></div>
+					</div>
+				</td>
+				<td style="vertical-align: top; border: none;">
+					<div id="quickstats" style="border-color: yellow;">
+							<div><span id="pname">Player 1</span>:</div>
+							<div><span id="pmoney">$1200</span></div>
+					</div>
+					<div style="width: 74px; height: 33px;">
+						<div style="display: none;" id="die1" title="Die (2 spots)" class=""><img src="Monopoly_files/Die_2.png" alt="2" style="width: 30px; height: 30px;"></div>
+						<div style="display: none;" id="die2" title="Die (3 spots)" class=""><img src="Monopoly_files/Die_3.png" alt="3" style="width: 30px; height: 30px;"></div>
+					</div>
+
+				</td>
+			</tr><tr>
+				<td colspan="2" style="border: none">
+					<div style="padding-top: 8px;">
+						<input style="display: inline;" id="nextbutton" title="Roll the dice and move your token accordingly." value="Roll Dice" type="button">
+						<input style="display: none;" id="resignbutton" title="If you cannot pay your debt then you must resign from the game." value="Resign" onclick="game.resign();" type="button">
+					</div>
+				</td>
+			</tr>
+		</tbody></table>
+	</div>
+
+	<div id="trade">
+		<table style="border-spacing: 3px;">
+			<tbody><tr>
+				<td class="trade-cell">
+					<div id="trade-leftp-name"></div>
+				</td>
+				<td class="trade-cell">
+					<div id="trade-rightp-name"></div>
+				</td>
+			</tr>
+			<tr>
+				<td class="trade-cell">
+					$&nbsp;<input id="trade-leftp-money" value="0" title="Enter amount to exchange with the other player.">
+				</td>
+				<td class="trade-cell">
+					$&nbsp;<input id="trade-rightp-money" value="0" title="Enter amount to exchange with the other player.">
+				</td>
+			</tr>
+			<tr>
+				<td id="trade-leftp-property" class="trade-cell"></td>
+				<td id="trade-rightp-property" class="trade-cell"></td>
+			</tr>
+			<tr>
+				<td colspan="2" class="trade-cell">
+					<input id="proposetradebutton" value="Propose Trade" onclick="game.proposeTrade();" title="Exchange the money and properties that are checked above." type="button">
+					<input id="canceltradebutton" value="Cancel Trade" onclick="game.cancelTrade();" title="Cancel the trade." type="button">
+					<input id="accepttradebutton" value="Accept Trade" onclick="game.acceptTrade();" title="Accept the proposed trade." type="button">
+					<input id="rejecttradebutton" value="Reject Trade" onclick="game.cancelTrade();" title="Reject the proposed trade." type="button">
+				</td>
+			</tr>
+		</tbody></table>
+	</div>
+
+
+<div style="display: none; top: 407px; left: 942px;" id="enlarge-wrap"><div id="enlarge0" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge0color" class="enlarge-color"></div><br><div id="enlarge0name" class="enlarge-name">GO</div><br><div id="enlarge0price" class="enlarge-price">COLLECT $200 SALARY AS YOU PASS.</div><br><div id="enlarge0token" class="enlarge-token"><img src="Monopoly_files/arrow_icon.png" alt="" height="40" width="136"></div></div><div id="enlarge1" class="enlarge"><div style="background-color: rgb(139, 69, 19);" id="enlarge1color" class="enlarge-color"></div><br><div id="enlarge1name" class="enlarge-name">Mediterranean Avenue</div><br><div id="enlarge1price" class="enlarge-price">$60</div><br><div id="enlarge1token" class="enlarge-token"></div></div><div id="enlarge2" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge2color" class="enlarge-color"></div><br><div id="enlarge2name" class="enlarge-name">Community Chest</div><br><div id="enlarge2price" class="enlarge-price">FOLLOW INSTRUCTIONS ON TOP CARD</div><br><div id="enlarge2token" class="enlarge-token"></div></div><div id="enlarge3" class="enlarge"><div style="background-color: rgb(139, 69, 19);" id="enlarge3color" class="enlarge-color"></div><br><div id="enlarge3name" class="enlarge-name">Baltic Avenue</div><br><div id="enlarge3price" class="enlarge-price">$60</div><br><div id="enlarge3token" class="enlarge-token"></div></div><div id="enlarge4" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge4color" class="enlarge-color"></div><br><div id="enlarge4name" class="enlarge-name">City Tax</div><br><div id="enlarge4price" class="enlarge-price">Pay $200</div><br><div id="enlarge4token" class="enlarge-token"></div></div><div id="enlarge5" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge5color" class="enlarge-color"></div><br><div id="enlarge5name" class="enlarge-name">Reading Railroad</div><br><div id="enlarge5price" class="enlarge-price">$200</div><br><div id="enlarge5token" class="enlarge-token"><img src="Monopoly_files/train_icon.png" alt="" style="position: relative; bottom: 20px;" height="60" width="65"></div></div><div id="enlarge6" class="enlarge"><div style="background-color: rgb(135, 206, 235);" id="enlarge6color" class="enlarge-color"></div><br><div id="enlarge6name" class="enlarge-name">Oriental Avenue</div><br><div id="enlarge6price" class="enlarge-price">$100</div><br><div id="enlarge6token" class="enlarge-token"></div></div><div id="enlarge7" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge7color" class="enlarge-color"></div><br><div id="enlarge7name" class="enlarge-name">Chance</div><br><div id="enlarge7price" class="enlarge-price">FOLLOW INSTRUCTIONS ON TOP CARD</div><br><div id="enlarge7token" class="enlarge-token"></div></div><div id="enlarge8" class="enlarge"><div style="background-color: rgb(135, 206, 235);" id="enlarge8color" class="enlarge-color"></div><br><div id="enlarge8name" class="enlarge-name">Vermont Avenue</div><br><div id="enlarge8price" class="enlarge-price">$100</div><br><div id="enlarge8token" class="enlarge-token"></div></div><div id="enlarge9" class="enlarge"><div style="background-color: rgb(135, 206, 235);" id="enlarge9color" class="enlarge-color"></div><br><div id="enlarge9name" class="enlarge-name">Connecticut Avenue</div><br><div id="enlarge9price" class="enlarge-price">$120</div><br><div id="enlarge9token" class="enlarge-token"></div></div><div id="enlarge10" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge10color" class="enlarge-color"></div><br><div id="enlarge10name" class="enlarge-name">Just Visiting</div><br><div id="enlarge10price" class="enlarge-price"></div><br><div id="enlarge10token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge11" class="enlarge"><div style="background-color: rgb(255, 0, 128);" id="enlarge11color" class="enlarge-color"></div><br><div id="enlarge11name" class="enlarge-name">St. Charles Place</div><br><div id="enlarge11price" class="enlarge-price">$140</div><br><div id="enlarge11token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge12" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge12color" class="enlarge-color"></div><br><div id="enlarge12name" class="enlarge-name">Electric Company</div><br><div id="enlarge12price" class="enlarge-price">$150</div><br><div id="enlarge12token" class="enlarge-token"><img src="Monopoly_files/electric_icon.png" alt="" style="position: relative; top: -20px;" height="60" width="48"></div></div><div style="display: none;" id="enlarge13" class="enlarge"><div style="background-color: rgb(255, 0, 128);" id="enlarge13color" class="enlarge-color"></div><br><div id="enlarge13name" class="enlarge-name">States Avenue</div><br><div id="enlarge13price" class="enlarge-price">$140</div><br><div id="enlarge13token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge14" class="enlarge"><div style="background-color: rgb(255, 0, 128);" id="enlarge14color" class="enlarge-color"></div><br><div id="enlarge14name" class="enlarge-name">Virginia Avenue</div><br><div id="enlarge14price" class="enlarge-price">$160</div><br><div id="enlarge14token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge15" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge15color" class="enlarge-color"></div><br><div id="enlarge15name" class="enlarge-name">Pennsylvania Railroad</div><br><div id="enlarge15price" class="enlarge-price">$200</div><br><div id="enlarge15token" class="enlarge-token"><img src="Monopoly_files/train_icon.png" alt="" style="position: relative; top: -20px;" height="60" width="65"></div></div><div style="display: none;" id="enlarge16" class="enlarge"><div style="background-color: rgb(255, 165, 0);" id="enlarge16color" class="enlarge-color"></div><br><div id="enlarge16name" class="enlarge-name">St. James Place</div><br><div id="enlarge16price" class="enlarge-price">$180</div><br><div id="enlarge16token" class="enlarge-token"></div></div><div id="enlarge17" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge17color" class="enlarge-color"></div><br><div id="enlarge17name" class="enlarge-name">Community Chest</div><br><div id="enlarge17price" class="enlarge-price">FOLLOW INSTRUCTIONS ON TOP CARD</div><br><div id="enlarge17token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge18" class="enlarge"><div style="background-color: rgb(255, 165, 0);" id="enlarge18color" class="enlarge-color"></div><br><div id="enlarge18name" class="enlarge-name">Tennessee Avenue</div><br><div id="enlarge18price" class="enlarge-price">$180</div><br><div id="enlarge18token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge19" class="enlarge"><div style="background-color: rgb(255, 165, 0);" id="enlarge19color" class="enlarge-color"></div><br><div id="enlarge19name" class="enlarge-name">New York Avenue</div><br><div id="enlarge19price" class="enlarge-price">$200</div><br><div id="enlarge19token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge20" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge20color" class="enlarge-color"></div><br><div id="enlarge20name" class="enlarge-name">Free Parking</div><br><div id="enlarge20price" class="enlarge-price"><img src="Monopoly_files/free_parking_icon.png" alt="" style="position: relative; top: -20px;" height="80" width="72"></div><br><div id="enlarge20token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge21" class="enlarge"><div style="background-color: rgb(255, 0, 0);" id="enlarge21color" class="enlarge-color"></div><br><div id="enlarge21name" class="enlarge-name">Kentucky Avenue</div><br><div id="enlarge21price" class="enlarge-price">$220</div><br><div id="enlarge21token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge22" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge22color" class="enlarge-color"></div><br><div id="enlarge22name" class="enlarge-name">Chance</div><br><div id="enlarge22price" class="enlarge-price">FOLLOW INSTRUCTIONS ON TOP CARD</div><br><div id="enlarge22token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge23" class="enlarge"><div style="background-color: rgb(255, 0, 0);" id="enlarge23color" class="enlarge-color"></div><br><div id="enlarge23name" class="enlarge-name">Indiana Avenue</div><br><div id="enlarge23price" class="enlarge-price">$220</div><br><div id="enlarge23token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge24" class="enlarge"><div style="background-color: rgb(255, 0, 0);" id="enlarge24color" class="enlarge-color"></div><br><div id="enlarge24name" class="enlarge-name">Illinois Avenue</div><br><div id="enlarge24price" class="enlarge-price">$240</div><br><div id="enlarge24token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge25" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge25color" class="enlarge-color"></div><br><div id="enlarge25name" class="enlarge-name">B&amp;O Railroad</div><br><div id="enlarge25price" class="enlarge-price">$200</div><br><div id="enlarge25token" class="enlarge-token"><img src="Monopoly_files/train_icon.png" alt="" style="position: relative; top: -20px;" height="60" width="65"></div></div><div style="display: none;" id="enlarge26" class="enlarge"><div style="background-color: rgb(255, 255, 0);" id="enlarge26color" class="enlarge-color"></div><br><div id="enlarge26name" class="enlarge-name">Atlantic Avenue</div><br><div id="enlarge26price" class="enlarge-price">$260</div><br><div id="enlarge26token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge27" class="enlarge"><div style="background-color: rgb(255, 255, 0);" id="enlarge27color" class="enlarge-color"></div><br><div id="enlarge27name" class="enlarge-name">Ventnor Avenue</div><br><div id="enlarge27price" class="enlarge-price">$260</div><br><div id="enlarge27token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge28" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge28color" class="enlarge-color"></div><br><div id="enlarge28name" class="enlarge-name">Water Works</div><br><div id="enlarge28price" class="enlarge-price">$150</div><br><div id="enlarge28token" class="enlarge-token"><img src="Monopoly_files/water_icon.png" alt="" style="position: relative; top: -20px;" height="60" width="78"></div></div><div style="display: none;" id="enlarge29" class="enlarge"><div style="background-color: rgb(255, 255, 0);" id="enlarge29color" class="enlarge-color"></div><br><div id="enlarge29name" class="enlarge-name">Marvin Gardens</div><br><div id="enlarge29price" class="enlarge-price">$280</div><br><div id="enlarge29token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge30" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge30color" class="enlarge-color"></div><br><div id="enlarge30name" class="enlarge-name">Go to Jail</div><br><div id="enlarge30price" class="enlarge-price">Go directly to Jail. Do not pass GO. Do not collect $200.</div><br><div id="enlarge30token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge31" class="enlarge"><div style="background-color: rgb(0, 128, 0);" id="enlarge31color" class="enlarge-color"></div><br><div id="enlarge31name" class="enlarge-name">Pacific Avenue</div><br><div id="enlarge31price" class="enlarge-price">$300</div><br><div id="enlarge31token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge32" class="enlarge"><div style="background-color: rgb(0, 128, 0);" id="enlarge32color" class="enlarge-color"></div><br><div id="enlarge32name" class="enlarge-name">North Carolina Avenue</div><br><div id="enlarge32price" class="enlarge-price">$300</div><br><div id="enlarge32token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge33" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge33color" class="enlarge-color"></div><br><div id="enlarge33name" class="enlarge-name">Community Chest</div><br><div id="enlarge33price" class="enlarge-price">FOLLOW INSTRUCTIONS ON TOP CARD</div><br><div id="enlarge33token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge34" class="enlarge"><div style="background-color: rgb(0, 128, 0);" id="enlarge34color" class="enlarge-color"></div><br><div id="enlarge34name" class="enlarge-name">Pennsylvania Avenue</div><br><div id="enlarge34price" class="enlarge-price">$320</div><br><div id="enlarge34token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge35" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge35color" class="enlarge-color"></div><br><div id="enlarge35name" class="enlarge-name">Short Line</div><br><div id="enlarge35price" class="enlarge-price">$200</div><br><div id="enlarge35token" class="enlarge-token"><img src="Monopoly_files/train_icon.png" alt="" style="position: relative; top: -20px;" height="60" width="65"></div></div><div id="enlarge36" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge36color" class="enlarge-color"></div><br><div id="enlarge36name" class="enlarge-name">Chance</div><br><div id="enlarge36price" class="enlarge-price">FOLLOW INSTRUCTIONS ON TOP CARD</div><br><div id="enlarge36token" class="enlarge-token"></div></div><div id="enlarge37" class="enlarge"><div style="background-color: rgb(0, 0, 255);" id="enlarge37color" class="enlarge-color"></div><br><div id="enlarge37name" class="enlarge-name">Park Place</div><br><div id="enlarge37price" class="enlarge-price">$350</div><br><div id="enlarge37token" class="enlarge-token"></div></div><div style="display: none;" id="enlarge38" class="enlarge"><div style="background-color: rgb(255, 255, 255);" id="enlarge38color" class="enlarge-color"></div><br><div id="enlarge38name" class="enlarge-name">LUXURY TAX</div><br><div id="enlarge38price" class="enlarge-price">Pay $100</div><br><div id="enlarge38token" class="enlarge-token"><img src="Monopoly_files/tax_icon.png" alt="" style="position: relative; top: -20px;" height="60" width="70"></div></div><div id="enlarge39" class="enlarge"><div style="background-color: rgb(0, 0, 255);" id="enlarge39color" class="enlarge-color"></div><br><div id="enlarge39name" class="enlarge-name">Boardwalk</div><br><div id="enlarge39price" class="enlarge-price">$400</div><br><div id="enlarge39token" class="enlarge-token"></div></div><div id="enlarge40" class="enlarge"><div id="enlarge40color" class="enlarge-color"></div><br><div id="enlarge40name" class="enlarge-name">Jail</div><br><div id="enlarge40price" class="enlarge-price"><img src="Monopoly_files/jake_icon.png" alt="" style="position: relative; top: -20px;" height="80" width="80"></div><br><div id="enlarge40token" class="enlarge-token"></div></div></div></body></html>
